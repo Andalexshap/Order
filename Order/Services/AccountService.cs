@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Order.Interfaces;
 using Order.Models;
+using Order.Models.Account;
 
 namespace Order.Servises
 {

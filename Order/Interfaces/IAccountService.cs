@@ -1,4 +1,4 @@
-﻿using Order.Models;
+﻿using Order.Models.Account;
 
 namespace Order.Interfaces
 {

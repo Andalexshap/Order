@@ -1,4 +1,4 @@
-﻿namespace Order.Models
+﻿namespace Order.Models.Order
 {
     public class Orders
     {

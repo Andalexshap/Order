@@ -1,4 +1,4 @@
-﻿namespace Order.Models
+﻿namespace Order.Models.Account
 {
     public class AuthorizationResponse : Response
     {
