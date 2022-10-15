@@ -9,6 +9,7 @@ namespace Order.Controllers
     {
         private readonly IProductService _productService;
         private readonly User _user;
+
         public ProductController(IProductService productService, User user)
         {
             _productService = productService;
@@ -44,12 +45,12 @@ namespace Order.Controllers
                 return View(response);
             }
 
-            return View("Error");
+            return View("Access deniedS");
         }
 
         [HttpGet]
         [Route("update")]
-        public ActionResult UpdateProduct(string id, string? name, string? desc, decimal? price, string? photo, int inventory)
+        public ActionResult UpdateProduct(string id, string? name, string? desc, decimal price, string? photo, int inventory)
         {
             if (_user.MemberType == MemberType.Administrator)
             {
@@ -67,7 +68,7 @@ namespace Order.Controllers
                 return View(response);
             }
 
-            return View("Error");
+            return View("Access denied");
         }
 
         [HttpGet]
@@ -81,7 +82,7 @@ namespace Order.Controllers
                 return View(response);
             }
 
-            return View("Error");
+            return View("Access denied");
         }
 
         [HttpGet]

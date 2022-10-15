@@ -238,7 +238,6 @@ namespace Order.Servises
 
             }
 
-
             var product = products.AllProducts.FirstOrDefault(x => x.Id == id);
 
             if (product == null)
