@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Order.Interfaces;
-using Order.Models;
+using Order.Models.Account;
 
 namespace Order.Controllers
 {

@@ -1,5 +1,5 @@
 using Order.Interfaces;
-using Order.Models;
+using Order.Models.Account;
 using Order.Servises;
 
 var builder = WebApplication.CreateBuilder(args);

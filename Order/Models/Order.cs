@@ -1,4 +1,6 @@
-﻿namespace Order.Models.Order
+﻿using Order.Models.Account;
+
+namespace Order.Models
 {
     public class Order
     {
