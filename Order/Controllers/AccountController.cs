@@ -4,7 +4,7 @@ using Order.Models;
 
 namespace Order.Controllers
 {
-    [Route("Account")]
+    [Route("account")]
     public class AccountController : Controller
     {
         private readonly IAccountService _accountService;
