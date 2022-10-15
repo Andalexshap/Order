@@ -1,6 +1,7 @@
 using Order.Interfaces;
 using Order.Models.Account;
-using Order.Servises;
+using Order.Services;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<IAccountService, AccountService>();
 builder.Services.AddSingleton<IProductService, ProductService>();
+builder.Services.AddSingleton<IOrderService, OrderService>();
+builder.Services.AddSingleton<ICartService, CartService>();
 builder.Services.AddSingleton<User>();
 
 var app = builder.Build();

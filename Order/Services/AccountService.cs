@@ -3,7 +3,7 @@ using Order.Interfaces;
 using Order.Models;
 using Order.Models.Account;
 
-namespace Order.Servises
+namespace Order.Services
 {
     public class AccountService : IAccountService
     {

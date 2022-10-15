@@ -3,14 +3,14 @@ using Order.Interfaces;
 using Order.Models;
 using Order.Models.Account;
 
-namespace Order.Servises
+namespace Order.Services
 {
-    public class OrderServise : IOrderService
+    public class OrderService : IOrderService
     {
         private string FileName;
         private readonly IProductService _productService;
 
-        public OrderServise(IProductService productService)
+        public OrderService(IProductService productService)
         {
             _productService = productService;
         }

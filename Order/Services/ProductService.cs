@@ -2,7 +2,7 @@
 using Order.Interfaces;
 using Order.Models;
 
-namespace Order.Servises
+namespace Order.Services
 {
     public class ProductService : IProductService
     {
