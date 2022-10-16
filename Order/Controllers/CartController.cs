@@ -21,37 +21,96 @@ namespace Order.Controllers
         [Route("allCarts")]
         public ActionResult GetAllCarts()
         {
-            return View();
+            if (_user.MemberType != MemberType.Administrator)
+            {
+                return View("Access denied!");
+            }
+
+            var response = _cartService.GetAllCarts();
+
+            return View(response);
         }
 
         [HttpGet]
         [Route("create")]
-        public ActionResult CreateCart(User user, Product product)
+        public ActionResult CreateCart(string productId, string name, string desc, decimal price, string photo, int quantity, int inventory)
         {
-            return View();
+            var product = new Product
+            {
+                Id = productId,
+                Name = name,
+                Description = desc,
+                Price = price,
+                Photo = photo,
+                Quantity = quantity,
+                Inventory = inventory
+            };
+
+            var response = _cartService.CreateCart(_user.Key, product);
+
+            return View(response);
         }
 
         [HttpGet]
         [Route("update")]
-        public ActionResult UpdateCart(User user, Product product)
+        public ActionResult UpdateCart(string productId, string name, string desc, decimal price, string photo, int quantity, int inventory)
         {
-            return View();
+            var product = new Product
+            {
+                Id = productId,
+                Name = name,
+                Description = desc,
+                Price = price,
+                Photo = photo,
+                Quantity = quantity,
+                Inventory = inventory
+            };
+
+            var response = _cartService.UpdateCart(_user.Key, product);
+
+            return View(response);
         }
 
         [HttpGet]
         [Route("delete")]
         public ActionResult DeleteCart(string cartId)
         {
+            if (_user.MemberType != MemberType.Administrator || !string.IsNullOrEmpty(_user.Key))
+            {
+                return Redirect("~/account/login");
+            }
 
-            return View();
+            var response = _cartService.DeleteCart(cartId);
+
+            return View(response);
         }
 
+        [HttpGet]
+        [Route("getCartByCartId")]
+        public ActionResult GetCartbyCartId(string cartId)
+        {
+            if (_user.MemberType != MemberType.Administrator || !string.IsNullOrEmpty(_user.Key))
+            {
+                return Redirect("~/account/login");
+            }
+
+            var response = _cartService.GetCartbyCartId(cartId);
+
+            return View(response);
+        }
 
         [HttpGet]
-        [Route("find")]
-        public ActionResult FindCartbyCartId(User user, Product product)
+        [Route("getCartByUserId")]
+        public ActionResult GetCartbyUserId(string userId)
         {
-            return View();
+            if (_user.MemberType != MemberType.Administrator || !string.IsNullOrEmpty(_user.Key))
+            {
+                return Redirect("~/account/login");
+            }
+
+            var response = _cartService.GetCartByUserId(_user.Key);
+
+            return View(response);
         }
     }
 }

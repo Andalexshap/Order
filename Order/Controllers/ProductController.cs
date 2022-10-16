@@ -29,7 +29,7 @@ namespace Order.Controllers
 
         [HttpGet]
         [Route("addNewProduct")]
-        public ActionResult AddNewProduct(string name, string desc, decimal price, string photo, int inventory)
+        public ActionResult AddNewProduct(string name, string desc, decimal price, string photo, int quantity, int inventory)
         {
             if (_user.MemberType == MemberType.Administrator)
             {
@@ -39,6 +39,7 @@ namespace Order.Controllers
                     Description = desc,
                     Price = price,
                     Photo = photo,
+                    Quantity = quantity,
                     Inventory = inventory
                 };
                 var response = _productService.AddNewProduct(product);
@@ -51,7 +52,7 @@ namespace Order.Controllers
 
         [HttpGet]
         [Route("update")]
-        public ActionResult UpdateProduct(string id, string? name, string? desc, decimal price, string? photo, int inventory)
+        public ActionResult UpdateProduct(string id, string? name, string? desc, decimal price, string? photo, int quantity, int inventory)
         {
             if (_user.MemberType == MemberType.Administrator)
             {
@@ -62,6 +63,7 @@ namespace Order.Controllers
                     Description = desc,
                     Price = price,
                     Photo = photo,
+                    Quantity = quantity,
                     Inventory = inventory
                 };
                 var response = _productService.UpdateProduct(product);

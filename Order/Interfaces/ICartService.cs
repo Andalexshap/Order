@@ -1,17 +1,15 @@
 ﻿using Order.Models;
-using Order.Models.Account;
 
 namespace Order.Interfaces
 {
     public interface ICartService
     {
         void SetFileName(string filename);
-        CartResponse GetAllCarts();
-        CartResponse CreateCart(User user, Product product);
-        CartResponse UpdateCart(User user, Product product);
+        Carts GetAllCarts();
+        CartResponse CreateCart(string userId, Product product);
+        CartResponse UpdateCart(string userId, Product product);
         CartResponse DeleteCart(string cartId);
-        CartResponse GetCartbyCartId(User user, Product product);
+        CartResponse GetCartbyCartId(string cartId);
         CartResponse GetCartByUserId(string userId);
-        CartResponse GetCartByUserLogin(string login);
     }
 }
