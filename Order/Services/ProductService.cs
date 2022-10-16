@@ -83,7 +83,7 @@ namespace Order.Services
             };
         }
 
-        public ProductResponse UpdateProduct(Product request)
+        public ProductResponse UpdateProduct(Product request, int? quantity)
         {
             var products = GetAllProducts();
 
@@ -147,6 +147,11 @@ namespace Order.Services
             if (request.Inventory != null)
             {
                 product.Inventory = request.Inventory;
+            }
+
+            if (product.Inventory != null & quantity != null)
+            {
+                product.Inventory += quantity;
             }
 
 

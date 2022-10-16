@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Order.Interfaces;
-using Order.Models;
 using Order.Models.Account;
 
 namespace Order.Controllers
@@ -33,40 +32,18 @@ namespace Order.Controllers
 
         [HttpGet]
         [Route("create")]
-        public ActionResult CreateCart(string productId, string name, string desc, decimal price, string photo, int quantity, int inventory)
+        public ActionResult CreateCart(string productId, int quantity)
         {
-            var product = new Product
-            {
-                Id = productId,
-                Name = name,
-                Description = desc,
-                Price = price,
-                Photo = photo,
-                Quantity = quantity,
-                Inventory = inventory
-            };
-
-            var response = _cartService.CreateCart(_user.Key, product);
+            var response = _cartService.CreateCart(_user.Key, productId, quantity);
 
             return View(response);
         }
 
         [HttpGet]
         [Route("update")]
-        public ActionResult UpdateCart(string productId, string name, string desc, decimal price, string photo, int quantity, int inventory)
+        public ActionResult UpdateCart(string productId, int quantity)
         {
-            var product = new Product
-            {
-                Id = productId,
-                Name = name,
-                Description = desc,
-                Price = price,
-                Photo = photo,
-                Quantity = quantity,
-                Inventory = inventory
-            };
-
-            var response = _cartService.UpdateCart(_user.Key, product);
+            var response = _cartService.UpdateCart(_user.Key, productId, quantity);
 
             return View(response);
         }

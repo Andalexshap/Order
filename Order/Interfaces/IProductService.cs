@@ -7,7 +7,7 @@ namespace Order.Interfaces
         void SetFileName(string filename);
         Products GetAllProducts();
         ProductResponse AddNewProduct(Product product);
-        ProductResponse UpdateProduct(Product product);
+        ProductResponse UpdateProduct(Product product, int? quqntity);
         ProductResponse DeleteProduct(string id);
         ProductResponse GetProductById(string id);
     }

@@ -20,14 +20,14 @@ namespace Order.Controllers
 
         [HttpGet]
         [Route("create")]
-        public ActionResult CreateOrder(Product product)
+        public ActionResult CreateOrder(string cartId)
         {
             if (_user.Key == null)
             {
                 return Redirect("~/account/login");
             }
 
-            var response = _orderService.CreateOrder(_user, product);
+            var response = _orderService.CreateOrder(_user.Key, cartId);
 
             return View(response);
 

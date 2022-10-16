@@ -1,18 +1,17 @@
 ﻿using Newtonsoft.Json;
 using Order.Interfaces;
 using Order.Models;
-using Order.Models.Account;
 
 namespace Order.Services
 {
     public class OrderService : IOrderService
     {
         private string FileName;
-        private readonly IProductService _productService;
+        private readonly ICartService _cartService;
 
-        public OrderService(IProductService productService)
+        public OrderService(ICartService cartService)
         {
-            _productService = productService;
+            _cartService = cartService;
         }
 
         public void SetFileName(string filename)
@@ -20,7 +19,7 @@ namespace Order.Services
             FileName = filename;
         }
 
-        public OrderResponse CreateOrder(User user, Product request)
+        public OrderResponse CreateOrder(string userId, string cartId)
         {
             var orders = GetAllOrders();
 
@@ -35,7 +34,7 @@ namespace Order.Services
                     writer.Write(output);
                 }
             }
-            var response = _productService.GetProductById(request.Id);
+            var response = _cartService.GetCartbyCartId(cartId);
 
             if (!response.Sucsess)
             {
@@ -47,7 +46,7 @@ namespace Order.Services
                         new Error
                         {
                             Code = "001",
-                            Message = "Product not found!",
+                            Message = "Cart not found!",
                             Target = nameof(CreateOrder)
                         }
                     }
@@ -59,10 +58,10 @@ namespace Order.Services
 
             order.Id = Guid.NewGuid().ToString();
             order.Status = OrderStatus.Issued;
-            order.Quantity++;
-            order.TotalPrice += request.Price;
-            order.User = user;
-            order.Products.Add(request);
+            order.TotalPrice = response.Cart.Price;
+            order.TotalCount = response.Cart.TotalCount;
+            order.UserId = userId;
+            order.Products = response.Cart.Products;
 
             orders = new Orders();
             orders.AllOrders = new List<Models.Order>();
@@ -72,6 +71,8 @@ namespace Order.Services
                 string output = JsonConvert.SerializeObject(orders);
                 writer.Write(output);
             }
+
+            _cartService.DeleteCart(cartId);
 
             return new OrderResponse
             {
@@ -187,7 +188,7 @@ namespace Order.Services
                 };
             }
 
-            var order = orders.AllOrders.FirstOrDefault(x => x.User.Key == userId);
+            var order = orders.AllOrders.FirstOrDefault(x => x.UserId == userId);
 
             if (order == null)
             {

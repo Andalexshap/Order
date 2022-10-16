@@ -36,7 +36,7 @@ namespace Order.Services
             return response;
         }
 
-        public CartResponse CreateCart(string userId, Product product)
+        public CartResponse CreateCart(string userId, string productId, int? quantity)
         {
             var сarts = GetAllCarts();
 
@@ -56,21 +56,23 @@ namespace Order.Services
 
             if (cart != null)
             {
-                UpdateCart(userId, product);
+                UpdateCart(userId, productId, quantity);
             }
 
-            if (product.Quantity < product.Inventory)
+            var response = _productService.GetProductById(productId);
+
+            if (quantity > response.Product.Inventory)
             {
-                product.Quantity = product.Inventory;
+                quantity = response.Product.Inventory;
             }
 
             cart = new Cart
             {
                 Id = Guid.NewGuid().ToString(),
                 UserId = userId,
-                Products = new List<Product> { product },
-                Price = product.Price,
-                TotalCount = product.Quantity
+                Products = new List<Product> { response.Product },
+                Price = response.Product.Price,
+                TotalCount = quantity
             };
 
             using (StreamWriter writer = File.CreateText(FileName))
@@ -78,6 +80,8 @@ namespace Order.Services
                 string output = JsonConvert.SerializeObject(сarts);
                 writer.Write(output);
             }
+
+            _productService.UpdateProduct(response.Product, -quantity);
 
             return new CartResponse
             {
@@ -86,37 +90,41 @@ namespace Order.Services
             };
         }
 
-        public CartResponse UpdateCart(string userId, Product product)
+        public CartResponse UpdateCart(string userId, string productId, int? quantity)
         {
             var сarts = GetAllCarts();
 
             if (сarts == null)
             {
-                CreateCart(userId, product);
+                CreateCart(userId, productId, quantity);
             }
 
             var cart = сarts.AllCarts.FirstOrDefault(x => x.UserId == userId);
 
             if (cart == null)
             {
-                CreateCart(userId, product);
+                CreateCart(userId, productId, quantity);
 
             }
 
-            if (product.Quantity < product.Inventory)
+            var response = _productService.GetProductById(productId);
+
+            if (quantity > response.Product.Inventory)
             {
-                product.Quantity = product.Inventory;
+                quantity = response.Product.Inventory;
             }
 
-            cart.Products.Add(product);
-            cart.Price += product.Price;
-            cart.TotalCount += product.Quantity;
+            cart.Products.Add(response.Product);
+            cart.Price += response.Product.Price;
+            cart.TotalCount += quantity;
 
             using (StreamWriter writer = File.CreateText(FileName))
             {
                 string output = JsonConvert.SerializeObject(сarts);
                 writer.Write(output);
             }
+
+            _productService.UpdateProduct(response.Product, -quantity);
 
             return new CartResponse
             {

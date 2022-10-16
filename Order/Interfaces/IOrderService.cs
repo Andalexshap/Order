@@ -1,12 +1,11 @@
 ﻿using Order.Models;
-using Order.Models.Account;
 
 namespace Order.Interfaces
 {
     public interface IOrderService
     {
         void SetFileName(string filename);
-        OrderResponse CreateOrder(User user, Product request);
+        OrderResponse CreateOrder(string userId, string cartId);
         public OrderResponse GetOrder(string orderId);
         Orders GetAllOrders();
         OrderStatus GetOrderStatus(string orderId);
