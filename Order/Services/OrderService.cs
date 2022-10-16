@@ -27,13 +27,8 @@ namespace Order.Services
             {
                 orders = new Orders();
                 orders.AllOrders = new List<Models.Order>();
-
-                using (StreamWriter writer = File.CreateText(FileName))
-                {
-                    string output = JsonConvert.SerializeObject(orders);
-                    writer.Write(output);
-                }
             }
+
             var response = _cartService.GetCartbyCartId(cartId);
 
             if (!response.Sucsess)
@@ -63,8 +58,7 @@ namespace Order.Services
             order.UserId = userId;
             order.Products = response.Cart.Products;
 
-            orders = new Orders();
-            orders.AllOrders = new List<Models.Order>();
+            orders.AddOrder(order);
 
             using (StreamWriter writer = File.CreateText(FileName))
             {
