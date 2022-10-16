@@ -9,5 +9,10 @@ namespace Order.Interfaces
         AuthorizationResponse LoginUser(User request);
 
         AuthorizationResponse RegisterUser(User request);
+
+        AuthorizationResponse UpdateUser(User request);
+
+        AuthorizationResponse DeleteUserbyLogin(string userLogin);
+        AuthorizationResponse DeleteUserbyId(string userId);
     }
 }

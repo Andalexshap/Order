@@ -53,6 +53,7 @@ namespace Order.Services
             }
 
             var found = accounts.Users.FirstOrDefault(x => x.Login == request.Login);
+
             if (found == null)
             {
                 return new AuthorizationResponse
@@ -164,5 +165,166 @@ namespace Order.Services
 
         }
 
+        public AuthorizationResponse UpdateUser(User request)
+        {
+            var accounts = GetAllAccounts();
+
+            if (accounts == null)
+            {
+                return new AuthorizationResponse
+                {
+                    Sucsess = false,
+                    Error = new List<Error>
+                    {
+                        new Error
+                        {
+                            Code = "001",
+                            Message = "Accounts is not Found!",
+                            Target = nameof(LoginUser)
+                        }
+                    }
+                };
+            }
+
+            var found = accounts.Users.FirstOrDefault(x => x.Login == request.Login & x.Password == request.Password);
+
+            if (found == null)
+            {
+                return new AuthorizationResponse
+                {
+                    Sucsess = false,
+                    Error = new List<Error>
+                    {
+                        new Error
+                        {
+                            Code = "002",
+                            Message = "User is not Found!",
+                            Target = nameof(LoginUser)
+                        }
+                    }
+                };
+            }
+
+            found = request;
+
+            using (StreamWriter writer = File.CreateText(FileName))
+            {
+                string output = JsonConvert.SerializeObject(accounts);
+                writer.Write(output);
+            };
+
+            return new AuthorizationResponse
+            {
+                Sucsess = true
+            };
+        }
+
+        public AuthorizationResponse DeleteUserbyLogin(string userLogin)
+        {
+            var accounts = GetAllAccounts();
+
+            if (accounts == null)
+            {
+                return new AuthorizationResponse
+                {
+                    Sucsess = false,
+                    Error = new List<Error>
+                    {
+                        new Error
+                        {
+                            Code = "001",
+                            Message = "Accounts is not Found!",
+                            Target = nameof(LoginUser)
+                        }
+                    }
+                };
+            }
+
+            var found = accounts.Users.FirstOrDefault(x => x.Login == userLogin);
+
+            if (found == null)
+            {
+                return new AuthorizationResponse
+                {
+                    Sucsess = false,
+                    Error = new List<Error>
+                    {
+                        new Error
+                        {
+                            Code = "002",
+                            Message = "User is not Found!",
+                            Target = nameof(LoginUser)
+                        }
+                    }
+                };
+            }
+
+            accounts.Users.Remove(found);
+
+            using (StreamWriter writer = File.CreateText(FileName))
+            {
+                string output = JsonConvert.SerializeObject(accounts);
+                writer.Write(output);
+            };
+
+            return new AuthorizationResponse
+            {
+                Sucsess = true
+            };
+        }
+
+        public AuthorizationResponse DeleteUserbyId(string userId)
+        {
+            var accounts = GetAllAccounts();
+
+            if (accounts == null)
+            {
+                return new AuthorizationResponse
+                {
+                    Sucsess = false,
+                    Error = new List<Error>
+                    {
+                        new Error
+                        {
+                            Code = "001",
+                            Message = "Accounts is not Found!",
+                            Target = nameof(LoginUser)
+                        }
+                    }
+                };
+            }
+
+            var found = accounts.Users.FirstOrDefault(x => x.Key == userId);
+
+            if (found == null)
+            {
+                return new AuthorizationResponse
+                {
+                    Sucsess = false,
+                    Error = new List<Error>
+                    {
+                        new Error
+                        {
+                            Code = "002",
+                            Message = "User is not Found!",
+                            Target = nameof(LoginUser)
+                        }
+                    }
+                };
+            }
+
+            accounts.Users.Remove(found);
+
+            using (StreamWriter writer = File.CreateText(FileName))
+            {
+                string output = JsonConvert.SerializeObject(accounts);
+                writer.Write(output);
+            };
+
+            return new AuthorizationResponse
+            {
+                Sucsess = true
+            };
+        }
     }
 }

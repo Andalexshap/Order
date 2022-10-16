@@ -76,6 +76,73 @@ namespace Order.Controllers
             };
 
             var response = _accountService.RegisterUser(user);
+
+            return View(response);
+        }
+
+        [HttpGet]
+        [Route("update")]
+        public ActionResult UpdateUser(string login, string password, string email,
+            string firstName, string lastName, string meddleName, string phoneNumber,
+            string country, string city, string region, string street, string numberOfHome,
+            string flat, string postalCode)
+        {
+            if (string.IsNullOrEmpty(login) || string.IsNullOrEmpty(password)
+                || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(phoneNumber))
+            {
+                return View("Error");
+            }
+
+            var user = new User
+            {
+                Login = login,
+                Email = email,
+                FirstName = firstName,
+                LastName = lastName,
+                MeddleName = meddleName,
+                PhoneNumber = phoneNumber,
+                Address = new Address
+                {
+                    Country = country,
+                    City = city,
+                    Region = region,
+                    Street = street,
+                    NumberOfHome = numberOfHome,
+                    Flat = flat,
+                    PostalCode = postalCode
+                }
+            };
+
+            var response = _accountService.UpdateUser(user);
+
+            return View(response);
+        }
+
+        [HttpGet]
+        [Route("deleteByLogin")]
+        public ActionResult DeleteAccoutByUserLogin(string userLogin)
+        {
+            if (_user.MemberType != MemberType.Administrator)
+            {
+                return View("Access denied!");
+            }
+
+            var response = _accountService.DeleteUserbyLogin(userLogin);
+
+            return View(response);
+        }
+
+        [HttpGet]
+        [Route("deleteById")]
+        public ActionResult DeleteAccoutById(string userId)
+        {
+            if (_user.MemberType != MemberType.Administrator)
+            {
+                return View("Access denied!");
+            }
+
+            var response = _accountService.DeleteUserbyId(userId);
+
             return View(response);
         }
 
