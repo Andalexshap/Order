@@ -85,7 +85,7 @@ namespace Order.Controllers
                 return Redirect("~/account/login");
             }
 
-            var response = _cartService.GetCartByUserId(_user.Key);
+            var response = _cartService.GetCartByUserId(userId);
 
             return View(response);
         }

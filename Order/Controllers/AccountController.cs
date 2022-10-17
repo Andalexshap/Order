@@ -87,7 +87,8 @@ namespace Order.Controllers
             string country, string city, string region, string street, string numberOfHome,
             string flat, string postalCode)
         {
-            if (string.IsNullOrEmpty(login) || string.IsNullOrEmpty(password)
+            if (_user.Login != login
+                || string.IsNullOrEmpty(login) || string.IsNullOrEmpty(password)
                 || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(phoneNumber))
             {
                 return View("Error");
@@ -96,6 +97,7 @@ namespace Order.Controllers
             var user = new User
             {
                 Login = login,
+                Password = password,
                 Email = email,
                 FirstName = firstName,
                 LastName = lastName,
