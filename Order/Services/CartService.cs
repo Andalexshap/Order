@@ -1,59 +1,61 @@
 ﻿using Newtonsoft.Json;
 using Order.Interfaces;
 using Order.Models;
+using Order.Models.Account;
+using Order.Utils;
 
 namespace Order.Services
 {
     public class CartService : ICartService
     {
-        private string FileName;
+        private string FileName = @"carts.json";
+
         private readonly IProductService _productService;
+
         public CartService(IProductService productService)
         {
             _productService = productService;
+
+            _productService.SetFileName("products.json");
         }
 
         public void SetFileName(string filename)
         {
-            FileName = filename;
+            if (!string.IsNullOrEmpty(filename))
+            {
+                FileName = filename;
+            }
         }
 
-        public Carts GetAllCarts()
+        private Carts? GetCarts()
         {
-            Carts response;
+            Carts? response;
 
             try
             {
-                response = JsonConvert
-                    .DeserializeObject<Carts>(File
-                    .ReadAllText(FileName));
+                response = FileName.GetData<Carts>();
             }
             catch
             {
                 return null;
 
             }
+
             return response;
         }
 
         public CartResponse CreateCart(string userId, string productId, int? quantity)
         {
-            var сarts = GetAllCarts();
+            var carts = GetCarts();
 
-            if (сarts == null)
+            if (carts == null)
             {
-                сarts = new Carts();
-                сarts.AllCarts = new List<Cart>();
-
-                using (StreamWriter writer = File.CreateText(FileName))
-                {
-                    string output = JsonConvert.SerializeObject(сarts);
-                    writer.Write(output);
-                }
+                carts = new Carts();
+                carts.AllCarts = new List<Cart>();
             }
 
-            var cart = сarts.AllCarts.FirstOrDefault(x => x.UserId == userId);
-
+            var cart = carts.AllCarts.FirstOrDefault(x => x.UserId == userId);
+            
             if (cart != null)
             {
                 UpdateCart(userId, productId, quantity);
@@ -75,11 +77,9 @@ namespace Order.Services
                 TotalCount = quantity
             };
 
-            using (StreamWriter writer = File.CreateText(FileName))
-            {
-                string output = JsonConvert.SerializeObject(сarts);
-                writer.Write(output);
-            }
+            carts.AllCarts.Add(cart);
+
+            FileName.WriteData(carts);
 
             _productService.UpdateProduct(response.Product, -quantity);
 
@@ -92,19 +92,18 @@ namespace Order.Services
 
         public CartResponse UpdateCart(string userId, string productId, int? quantity)
         {
-            var сarts = GetAllCarts();
+            var carts = GetCarts();
 
-            if (сarts == null)
+            if (carts == null)
             {
                 CreateCart(userId, productId, quantity);
             }
 
-            var cart = сarts.AllCarts.FirstOrDefault(x => x.UserId == userId);
+            var cart = carts.AllCarts.FirstOrDefault(x => x.UserId == userId);
 
             if (cart == null)
             {
                 CreateCart(userId, productId, quantity);
-
             }
 
             var response = _productService.GetProductById(productId);
@@ -118,11 +117,9 @@ namespace Order.Services
             cart.Price += response.Product.Price;
             cart.TotalCount += quantity;
 
-            using (StreamWriter writer = File.CreateText(FileName))
-            {
-                string output = JsonConvert.SerializeObject(сarts);
-                writer.Write(output);
-            }
+            carts.AllCarts.Add(cart);
+
+            FileName.WriteData(carts);
 
             _productService.UpdateProduct(response.Product, -quantity);
 
@@ -135,9 +132,9 @@ namespace Order.Services
 
         public CartResponse DeleteCart(string cartId)
         {
-            var сarts = GetAllCarts();
+            var carts = GetCarts();
 
-            if (сarts == null)
+            if (carts == null)
             {
                 return new CartResponse
                 {
@@ -154,7 +151,7 @@ namespace Order.Services
                 };
             }
 
-            var cart = сarts.AllCarts.FirstOrDefault(x => x.Id == cartId);
+            var cart = carts.AllCarts.FirstOrDefault(x => x.Id == cartId);
 
             if (cart == null)
             {
@@ -173,13 +170,9 @@ namespace Order.Services
                 };
             }
 
-            сarts.AllCarts.Remove(cart);
+            carts.AllCarts.Remove(cart);
 
-            using (StreamWriter writer = File.CreateText(FileName))
-            {
-                string output = JsonConvert.SerializeObject(сarts);
-                writer.Write(output);
-            }
+            FileName.WriteData(carts);
 
             return new CartResponse
             {
@@ -189,9 +182,9 @@ namespace Order.Services
 
         public CartResponse GetCartbyCartId(string cartId)
         {
-            var сarts = GetAllCarts();
+            var carts = GetCarts();
 
-            if (сarts == null)
+            if (carts == null)
             {
                 return new CartResponse
                 {
@@ -208,7 +201,7 @@ namespace Order.Services
                 };
             }
 
-            var cart = сarts.AllCarts.FirstOrDefault(x => x.Id == cartId);
+            var cart = carts.AllCarts.FirstOrDefault(x => x.Id == cartId);
 
             if (cart == null)
             {
@@ -234,11 +227,12 @@ namespace Order.Services
             };
         }
 
+        //TODO: Поменять ошибки при невозможности получить из файла список корзин по всем методам
         public CartResponse GetCartByUserId(string userId)
         {
-            var сarts = GetAllCarts();
+            var carts = GetCarts();
 
-            if (сarts == null)
+            if (carts == null)
             {
                 return new CartResponse
                 {
@@ -255,7 +249,7 @@ namespace Order.Services
                 };
             }
 
-            var cart = сarts.AllCarts.FirstOrDefault(x => x.UserId == userId);
+            var cart = carts.AllCarts.FirstOrDefault(x => x.UserId == userId);
 
             if (cart == null)
             {
@@ -279,6 +273,31 @@ namespace Order.Services
                 Sucsess = true,
                 Cart = cart
             };
+        }
+
+        public CartResponse GetListCarts()
+        {
+            CartResponse response = new CartResponse();
+
+            var carts = GetCarts();
+
+            if (carts == null)
+            {
+                response.Sucsess = false;
+                response.Error = new List<Error>
+                {
+                    new Error
+                    {
+                        Code = "001",
+                        Message = "List carts not found",
+                        Target = nameof(GetCarts)
+                    }
+                };
+            }
+
+            response.CartList = carts;
+
+            return response;
         }
     }
 }

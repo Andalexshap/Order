@@ -2,26 +2,29 @@
 using Order.Interfaces;
 using Order.Models;
 using Order.Models.Account;
+using Order.Utils;
 
 namespace Order.Services
 {
     public class AccountService : IAccountService
     {
-        private string FileName;
+        private string FileName = @"accounts.json";
+
         public void SetFileName(string filename)
         {
-            FileName = filename;
+            if (!string.IsNullOrEmpty(filename))
+            {
+                FileName = filename;
+            }
         }
 
-        private Accounts GetAllAccounts()
+        private Accounts? GetAccounts()
         {
-            Accounts response;
+            Accounts? response;
 
             try
             {
-                response = JsonConvert
-                    .DeserializeObject<Accounts>(File
-                    .ReadAllText(FileName));
+                response = FileName.GetData<Accounts>();
             }
             catch
             {
@@ -33,7 +36,7 @@ namespace Order.Services
 
         public AuthorizationResponse LoginUser(User request)
         {
-            var accounts = GetAllAccounts();
+            var accounts = GetAccounts();
 
             if (accounts == null)
             {
@@ -98,7 +101,7 @@ namespace Order.Services
         }
         public AuthorizationResponse RegisterUser(User request)
         {
-            var accounts = GetAllAccounts();
+            var accounts = GetAccounts();
 
             if (accounts != null)
             {
@@ -132,11 +135,7 @@ namespace Order.Services
 
                 accounts.Users.Add(administrator);
 
-                using (StreamWriter writer = File.CreateText(FileName))
-                {
-                    string output = JsonConvert.SerializeObject(accounts);
-                    writer.Write(output);
-                };
+                FileName.WriteData(accounts);
 
                 return new AuthorizationResponse
                 {
@@ -151,11 +150,7 @@ namespace Order.Services
 
             accounts.Users.Add(user);
 
-            using (StreamWriter writer = File.CreateText(FileName))
-            {
-                string output = JsonConvert.SerializeObject(accounts);
-                writer.Write(output);
-            };
+            FileName.WriteData(accounts);
 
             return new AuthorizationResponse
             {
@@ -167,7 +162,7 @@ namespace Order.Services
 
         public AuthorizationResponse UpdateUser(User request)
         {
-            var accounts = GetAllAccounts();
+            var accounts = GetAccounts();
 
             if (accounts == null)
             {
@@ -186,7 +181,7 @@ namespace Order.Services
                 };
             }
 
-            var found = accounts.Users.FirstOrDefault(x => x.Login == request.Login & x.Password == request.Password);
+            var found = accounts.Users.FirstOrDefault(x => x.Login == request.Login);
 
             if (found == null)
             {
@@ -205,13 +200,14 @@ namespace Order.Services
                 };
             }
 
-            found = request;
+            request.Key = found.Key;
+            request.Password = found.Password;
+            request.MemberType = found.MemberType;
 
-            using (StreamWriter writer = File.CreateText(FileName))
-            {
-                string output = JsonConvert.SerializeObject(accounts);
-                writer.Write(output);
-            };
+            accounts.Users.Remove(found);
+            accounts.Users.Add(request);
+
+            FileName.WriteData(accounts);
 
             return new AuthorizationResponse
             {
@@ -219,9 +215,9 @@ namespace Order.Services
             };
         }
 
-        public AuthorizationResponse DeleteUserbyLogin(string userLogin)
+        public AuthorizationResponse DeleteUserbyLogin(string login)
         {
-            var accounts = GetAllAccounts();
+            var accounts = GetAccounts();
 
             if (accounts == null)
             {
@@ -240,7 +236,7 @@ namespace Order.Services
                 };
             }
 
-            var found = accounts.Users.FirstOrDefault(x => x.Login == userLogin);
+            var found = accounts.Users.FirstOrDefault(x => x.Login == login);
 
             if (found == null)
             {
@@ -261,11 +257,7 @@ namespace Order.Services
 
             accounts.Users.Remove(found);
 
-            using (StreamWriter writer = File.CreateText(FileName))
-            {
-                string output = JsonConvert.SerializeObject(accounts);
-                writer.Write(output);
-            };
+            FileName.WriteData(accounts);
 
             return new AuthorizationResponse
             {
@@ -273,9 +265,11 @@ namespace Order.Services
             };
         }
 
+
+        ///TODO: Change to ID, not KEY
         public AuthorizationResponse DeleteUserbyId(string userId)
         {
-            var accounts = GetAllAccounts();
+            var accounts = GetAccounts();
 
             if (accounts == null)
             {
@@ -315,11 +309,7 @@ namespace Order.Services
 
             accounts.Users.Remove(found);
 
-            using (StreamWriter writer = File.CreateText(FileName))
-            {
-                string output = JsonConvert.SerializeObject(accounts);
-                writer.Write(output);
-            };
+            FileName.WriteData(accounts);
 
             return new AuthorizationResponse
             {
