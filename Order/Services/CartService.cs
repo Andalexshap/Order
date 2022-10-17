@@ -8,12 +8,15 @@ namespace Order.Services
 {
     public class CartService : ICartService
     {
-        private readonly IProductService _productService;
         private string FileName = @"carts.json";
+
+        private readonly IProductService _productService;
 
         public CartService(IProductService productService)
         {
             _productService = productService;
+
+            _productService.SetFileName("products.json");
         }
 
         public void SetFileName(string filename)
@@ -24,7 +27,7 @@ namespace Order.Services
             }
         }
 
-        public Carts? GetCarts()
+        private Carts? GetCarts()
         {
             Carts? response;
 
@@ -74,6 +77,8 @@ namespace Order.Services
                 TotalCount = quantity
             };
 
+            carts.AllCarts.Add(cart);
+
             FileName.WriteData(carts);
 
             _productService.UpdateProduct(response.Product, -quantity);
@@ -99,7 +104,6 @@ namespace Order.Services
             if (cart == null)
             {
                 CreateCart(userId, productId, quantity);
-
             }
 
             var response = _productService.GetProductById(productId);
@@ -112,6 +116,8 @@ namespace Order.Services
             cart.Products.Add(response.Product);
             cart.Price += response.Product.Price;
             cart.TotalCount += quantity;
+
+            carts.AllCarts.Add(cart);
 
             FileName.WriteData(carts);
 
@@ -221,6 +227,7 @@ namespace Order.Services
             };
         }
 
+        //TODO: Поменять ошибки при невозможности получить из файла список корзин по всем методам
         public CartResponse GetCartByUserId(string userId)
         {
             var carts = GetCarts();
@@ -266,6 +273,31 @@ namespace Order.Services
                 Sucsess = true,
                 Cart = cart
             };
+        }
+
+        public CartResponse GetListCarts()
+        {
+            CartResponse response = new CartResponse();
+
+            var carts = GetCarts();
+
+            if (carts == null)
+            {
+                response.Sucsess = false;
+                response.Error = new List<Error>
+                {
+                    new Error
+                    {
+                        Code = "001",
+                        Message = "List carts not found",
+                        Target = nameof(GetCarts)
+                    }
+                };
+            }
+
+            response.CartList = carts;
+
+            return response;
         }
     }
 }

@@ -17,7 +17,7 @@ namespace Order.Controllers
         }
 
         [HttpGet]
-        [Route("allCarts")]
+        [Route("all-carts")]
         public ActionResult GetAllCarts()
         {
             if (_user.MemberType != MemberType.Administrator)
@@ -25,7 +25,7 @@ namespace Order.Controllers
                 return View("Access denied!");
             }
 
-            var response = _cartService.GetCarts();
+            var response = _cartService.GetListCarts();
 
             return View(response);
         }
