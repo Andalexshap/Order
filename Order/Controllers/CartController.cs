@@ -25,7 +25,7 @@ namespace Order.Controllers
                 return View("Access denied!");
             }
 
-            var response = _cartService.GetAllCarts();
+            var response = _cartService.GetCarts();
 
             return View(response);
         }

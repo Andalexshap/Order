@@ -2,26 +2,29 @@
 using Order.Interfaces;
 using Order.Models;
 using Order.Models.Account;
+using Order.Utils;
 
 namespace Order.Services
 {
     public class AccountService : IAccountService
     {
-        private string FileName;
+        private string FileName = @"accounts.json";
+
         public void SetFileName(string filename)
         {
-            FileName = filename;
+            if (!string.IsNullOrEmpty(filename))
+            {
+                FileName = filename;
+            }
         }
 
-        private Accounts GetAllAccounts()
+        private Accounts? GetAccounts()
         {
-            Accounts response;
+            Accounts? response;
 
             try
             {
-                response = JsonConvert
-                    .DeserializeObject<Accounts>(File
-                    .ReadAllText(FileName));
+                response = FileName.GetData<Accounts>();
             }
             catch
             {
@@ -33,7 +36,7 @@ namespace Order.Services
 
         public AuthorizationResponse LoginUser(User request)
         {
-            var accounts = GetAllAccounts();
+            var accounts = GetAccounts();
 
             if (accounts == null)
             {
@@ -98,7 +101,7 @@ namespace Order.Services
         }
         public AuthorizationResponse RegisterUser(User request)
         {
-            var accounts = GetAllAccounts();
+            var accounts = GetAccounts();
 
             if (accounts != null)
             {
@@ -167,7 +170,7 @@ namespace Order.Services
 
         public AuthorizationResponse UpdateUser(User request)
         {
-            var accounts = GetAllAccounts();
+            var accounts = GetAccounts();
 
             if (accounts == null)
             {
@@ -221,7 +224,7 @@ namespace Order.Services
 
         public AuthorizationResponse DeleteUserbyLogin(string userLogin)
         {
-            var accounts = GetAllAccounts();
+            var accounts = GetAccounts();
 
             if (accounts == null)
             {
@@ -275,7 +278,7 @@ namespace Order.Services
 
         public AuthorizationResponse DeleteUserbyId(string userId)
         {
-            var accounts = GetAllAccounts();
+            var accounts = GetAccounts();
 
             if (accounts == null)
             {
