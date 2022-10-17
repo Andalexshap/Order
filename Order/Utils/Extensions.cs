@@ -24,7 +24,7 @@ namespace Order.Utils
 
         internal static T? GetData<T>(this string fileName) where T : class
         {
-            return fileName.ReadAllText() == null ? null : JsonConvert.DeserializeObject<T>(fileName.ReadAllText());
+            return fileName.ReadAllText() == null ? null : fileName.ReadAllText().DeserializeTo<T>();
         }
 
         internal static void WriteData<T>(this string fileName, T model)
