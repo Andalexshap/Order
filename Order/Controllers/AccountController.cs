@@ -121,7 +121,7 @@ namespace Order.Controllers
         }
 
         [HttpGet]
-        [Route("deleteByLogin")]
+        [Route("delete-by-login")]
         public ActionResult DeleteAccoutByUserLogin(string userLogin)
         {
             if (_user.MemberType != MemberType.Administrator)
@@ -135,7 +135,7 @@ namespace Order.Controllers
         }
 
         [HttpGet]
-        [Route("deleteById")]
+        [Route("delete-by-id")]
         public ActionResult DeleteAccoutById(string userId)
         {
             if (_user.MemberType != MemberType.Administrator)

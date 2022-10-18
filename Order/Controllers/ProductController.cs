@@ -19,7 +19,7 @@ namespace Order.Controllers
         }
 
         [HttpGet]
-        [Route("allProducts")]
+        [Route("all-products")]
         public ActionResult GetAllProducts()
         {
             var request = _productService.GetAllProducts();
@@ -28,7 +28,7 @@ namespace Order.Controllers
         }
 
         [HttpGet]
-        [Route("addNewProduct")]
+        [Route("add-new-product")]
         public ActionResult AddNewProduct(string name, string desc, decimal price, string photo, int inventory)
         {
             if (_user.MemberType == MemberType.Administrator)
@@ -87,7 +87,7 @@ namespace Order.Controllers
         }
 
         [HttpGet]
-        [Route("getProduct")]
+        [Route("get-product")]
         public ActionResult GetProductById(string id)
         {
             var request = _productService.GetProductById(id);

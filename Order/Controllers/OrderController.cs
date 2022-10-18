@@ -34,7 +34,7 @@ namespace Order.Controllers
         }
 
         [HttpGet]
-        [Route("getOrder")]
+        [Route("get-order")]
         public ActionResult GetOrder(string OrderId)
         {
             if (_user.Key == null)
@@ -48,7 +48,7 @@ namespace Order.Controllers
         }
 
         [HttpGet]
-        [Route("getAllOrders")]
+        [Route("get-all-orders")]
         public ActionResult GetAllOrders()
         {
             if (_user.MemberType != MemberType.Administrator)
@@ -62,7 +62,7 @@ namespace Order.Controllers
         }
 
         [HttpGet]
-        [Route("getOrderStatus")]
+        [Route("get-order-status")]
         public ActionResult GetOrderStatus(string orderId)
         {
             if (_user.Key == null)
@@ -76,7 +76,7 @@ namespace Order.Controllers
         }
 
         [HttpGet]
-        [Route("getUserOrder")]
+        [Route("get-user-order")]
         public ActionResult GetUserOrder(string userId)
         {
             if (_user.Key == null)
@@ -89,7 +89,7 @@ namespace Order.Controllers
         }
 
         [HttpGet]
-        [Route("changeStatus")]
+        [Route("change-status")]
         public ActionResult ChangeStatus(string orderId, OrderStatus status)
         {
             if (_user.MemberType != MemberType.Administrator)

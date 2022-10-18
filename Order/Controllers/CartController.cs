@@ -63,7 +63,7 @@ namespace Order.Controllers
         }
 
         [HttpGet]
-        [Route("getCartByCartId")]
+        [Route("get-cart-by-cart-id")]
         public ActionResult GetCartbyCartId(string cartId)
         {
             if (_user.MemberType != MemberType.Administrator || !string.IsNullOrEmpty(_user.Key))
@@ -77,7 +77,7 @@ namespace Order.Controllers
         }
 
         [HttpGet]
-        [Route("getCartByUserId")]
+        [Route("get-cart-by-user-id")]
         public ActionResult GetCartbyUserId(string userId)
         {
             if (_user.MemberType != MemberType.Administrator || !string.IsNullOrEmpty(_user.Key))
