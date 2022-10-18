@@ -7,7 +7,6 @@ namespace Order.Interfaces
         void SetFileName(string filename);
         OrderResponse CreateOrder(string userId, string cartId);
         public OrderResponse GetOrder(string orderId);
-        Orders GetAllOrders();
         OrderStatus GetOrderStatus(string orderId);
         OrderResponse GetUserOrder(string userId);
         OrderResponse UpdateStatus(string orderId, OrderStatus status);
