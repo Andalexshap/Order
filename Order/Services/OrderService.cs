@@ -1,12 +1,13 @@
 ﻿using Newtonsoft.Json;
 using Order.Interfaces;
 using Order.Models;
+using Order.Utils;
 
 namespace Order.Services
 {
     public class OrderService : IOrderService
     {
-        private string FileName;
+        private string FileName = @"orders.json";
         private readonly ICartService _cartService;
 
         public OrderService(ICartService cartService)
@@ -17,6 +18,22 @@ namespace Order.Services
         public void SetFileName(string filename)
         {
             FileName = filename;
+        }
+
+        private Orders? GetAllOrders()
+        {
+            Orders? response;
+
+            try
+            {
+                response = FileName.GetData<Orders>();
+            }
+            catch
+            {
+                return null;
+
+            }
+            return response;
         }
 
         public OrderResponse CreateOrder(string userId, string cartId)
@@ -53,18 +70,14 @@ namespace Order.Services
 
             order.Id = Guid.NewGuid().ToString();
             order.Status = OrderStatus.Issued;
-            order.TotalPrice = response.Cart.Price;
-            order.TotalCount = response.Cart.TotalCount;
+            order.TotalPrice = response?.Cart?.Price;
+            order.TotalCount = response?.Cart?.TotalCount;
             order.UserId = userId;
             order.Products = response.Cart.Products;
 
             orders.AddOrder(order);
 
-            using (StreamWriter writer = File.CreateText(FileName))
-            {
-                string output = JsonConvert.SerializeObject(orders);
-                writer.Write(output);
-            }
+            FileName.WriteData(orders);
 
             _cartService.DeleteCart(cartId);
 
@@ -124,23 +137,6 @@ namespace Order.Services
             };
         }
 
-        public Orders GetAllOrders()
-        {
-            Orders response;
-
-            try
-            {
-                response = JsonConvert
-                    .DeserializeObject<Orders>(File
-                    .ReadAllText(FileName));
-            }
-            catch
-            {
-                return null;
-
-            }
-            return response;
-        }
 
         public OrderStatus GetOrderStatus(string orderId)
         {
@@ -309,12 +305,7 @@ namespace Order.Services
 
             orders.AllOrders.Remove(order);
 
-            using (StreamWriter writer = File.CreateText(FileName))
-            {
-                string output = JsonConvert.SerializeObject(orders);
-                writer.Write(output);
-            }
-
+            FileName.WriteData(orders);
 
             return new OrderResponse
             {

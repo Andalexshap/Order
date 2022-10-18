@@ -1,34 +1,32 @@
-﻿using Newtonsoft.Json;
-using Order.Interfaces;
+﻿using Order.Interfaces;
 using Order.Models;
+using Order.Utils;
 
 namespace Order.Services
 {
     public class ProductService : IProductService
     {
-
-        private string FileName;
+        private string FileName = @"products.json";
 
         public void SetFileName(string filename)
         {
             FileName = filename;
         }
 
-        public Products GetAllProducts()
+        public Products? GetAllProducts()
         {
-            Products response;
+            Products? response;
 
             try
             {
-                response = JsonConvert
-                    .DeserializeObject<Products>(File
-                    .ReadAllText(FileName));
+                response = FileName.GetData<Products>();
             }
             catch
             {
                 return null;
 
             }
+
             return response;
         }
 
@@ -70,11 +68,7 @@ namespace Order.Services
             product.Id = Guid.NewGuid().ToString();
             products.AllProducts.Add(product);
 
-            using (StreamWriter writer = File.CreateText(FileName))
-            {
-                string output = JsonConvert.SerializeObject(products);
-                writer.Write(output);
-            }
+            FileName.WriteData(products);
 
             return new ProductResponse
             {
@@ -154,12 +148,7 @@ namespace Order.Services
                 product.Inventory += quantity;
             }
 
-
-            using (StreamWriter writer = File.CreateText(FileName))
-            {
-                string output = JsonConvert.SerializeObject(products);
-                writer.Write(output);
-            }
+            FileName.WriteData(products);
 
             return new ProductResponse
             {
@@ -209,11 +198,7 @@ namespace Order.Services
 
             products.AllProducts.Remove(product);
 
-            using (StreamWriter writer = File.CreateText(FileName))
-            {
-                string output = JsonConvert.SerializeObject(products);
-                writer.Write(output);
-            }
+            FileName.WriteData(products);
 
             return new ProductResponse
             {
