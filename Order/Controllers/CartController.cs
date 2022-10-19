@@ -12,7 +12,7 @@ namespace Order.Controllers
         public CartController(ICartService cartService, User user)
         {
             _cartService = cartService;
-            _cartService.SetFileName("cart.json");
+            _cartService.SetFileName("carts.json");
             _user = user;
         }
 
@@ -66,7 +66,7 @@ namespace Order.Controllers
         [Route("get-cart-by-cart-id")]
         public ActionResult GetCartbyCartId(string cartId)
         {
-            if (_user.MemberType != MemberType.Administrator || !string.IsNullOrEmpty(_user.Key))
+            if (_user.MemberType != MemberType.Administrator && string.IsNullOrEmpty(_user.Key))
             {
                 return Redirect("~/account/login");
             }
@@ -80,7 +80,7 @@ namespace Order.Controllers
         [Route("get-cart-by-user-id")]
         public ActionResult GetCartbyUserId(string userId)
         {
-            if (_user.MemberType != MemberType.Administrator || !string.IsNullOrEmpty(_user.Key))
+            if (_user.MemberType != MemberType.Administrator && string.IsNullOrEmpty(_user.Key))
             {
                 return Redirect("~/account/login");
             }

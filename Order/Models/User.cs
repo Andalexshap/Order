@@ -2,6 +2,7 @@
 {
     public class User
     {
+        public string? Id { get; set; }
         public string? Login { get; set; }
         public string? Password { get; set; }
         public string? Key { get; set; }
@@ -15,6 +16,7 @@
 
         public void SetUser(User user)
         {
+            Id = user.Id;
             Login = user.Login;
             Password = user.Password;
             Key = user.Key;
@@ -28,6 +30,7 @@
         }
         public void Logout()
         {
+            Id = null;
             Login = null;
             Password = null;
             Key = null;

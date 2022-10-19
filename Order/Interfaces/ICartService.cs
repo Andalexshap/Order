@@ -11,5 +11,6 @@ namespace Order.Interfaces
         CartResponse DeleteCart(string cartId);
         CartResponse GetCartbyCartId(string cartId);
         CartResponse GetCartByUserId(string userId);
+        CartResponse RecalculateCart(string cartId);
     }
 }
