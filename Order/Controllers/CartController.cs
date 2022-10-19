@@ -34,7 +34,7 @@ namespace Order.Controllers
         [Route("create")]
         public ActionResult CreateCart(string productId, int quantity)
         {
-            var response = _cartService.CreateCart(_user.Key, productId, quantity);
+            var response = _cartService.CreateCart(_user.Id, productId, quantity);
 
             return View(response);
         }
@@ -43,7 +43,7 @@ namespace Order.Controllers
         [Route("update")]
         public ActionResult UpdateCart(string productId, int quantity)
         {
-            var response = _cartService.UpdateCart(_user.Key, productId, quantity);
+            var response = _cartService.UpdateCart(_user.Id, productId, quantity);
 
             return View(response);
         }
@@ -52,7 +52,7 @@ namespace Order.Controllers
         [Route("delete")]
         public ActionResult DeleteCart(string cartId)
         {
-            if (_user.MemberType != MemberType.Administrator || !string.IsNullOrEmpty(_user.Key))
+            if (string.IsNullOrEmpty(_user.Id))
             {
                 return Redirect("~/account/login");
             }
@@ -66,7 +66,7 @@ namespace Order.Controllers
         [Route("get-cart-by-cart-id")]
         public ActionResult GetCartbyCartId(string cartId)
         {
-            if (_user.MemberType != MemberType.Administrator && string.IsNullOrEmpty(_user.Key))
+            if (string.IsNullOrEmpty(_user.Id))
             {
                 return Redirect("~/account/login");
             }
@@ -80,7 +80,7 @@ namespace Order.Controllers
         [Route("get-cart-by-user-id")]
         public ActionResult GetCartbyUserId(string userId)
         {
-            if (_user.MemberType != MemberType.Administrator && string.IsNullOrEmpty(_user.Key))
+            if (string.IsNullOrEmpty(_user.Id))
             {
                 return Redirect("~/account/login");
             }

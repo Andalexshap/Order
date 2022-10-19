@@ -185,9 +185,10 @@ namespace Order.Services
                 };
             }
 
-            var userOrders = orders.AllOrders.Where(x => x.UserId == userId);
+            var userOrders = new Orders();
+            userOrders.AllOrders = orders.AllOrders.Where(x => x.UserId == userId).ToList();
 
-            if (userOrders == null)
+            if (userOrders.AllOrders == null)
             {
                 return new OrderResponse
                 {
@@ -205,10 +206,12 @@ namespace Order.Services
                 };
             }
 
+
+
             return new OrderResponse
             {
                 Sucsess = true,
-                OrderList = (Orders)userOrders
+                OrderList = userOrders
             };
         }
 
