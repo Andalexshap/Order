@@ -94,7 +94,7 @@ namespace Order.Services
                 Order = order
             };
         }
-        // ToDo переделать под получение нескольких ордеров одного пользователя
+       
         public OrderResponse GetOrder(string orderId)
         {
             var orders = GetOrders();
