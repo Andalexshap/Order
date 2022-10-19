@@ -117,9 +117,9 @@ namespace Order.Services
                 };
             }
 
-            var userOrders = orders.AllOrders.FindAll(x => x.Id == orderId);
+            var order = orders.AllOrders.FirstOrDefault(x => x.Id == orderId);
 
-            if (userOrders == null)
+            if (order == null)
             {
                 return new OrderResponse
                 {
@@ -140,7 +140,7 @@ namespace Order.Services
             return new OrderResponse
             {
                 Sucsess = true,
-                OrderList = userOrders
+                Order = order
             };
         }
 
@@ -185,9 +185,9 @@ namespace Order.Services
                 };
             }
 
-            var order = orders.AllOrders.FirstOrDefault(x => x.UserId == userId);
+            var userOrders = orders.AllOrders.Where(x => x.UserId == userId);
 
-            if (order == null)
+            if (userOrders == null)
             {
                 return new OrderResponse
                 {
@@ -208,7 +208,7 @@ namespace Order.Services
             return new OrderResponse
             {
                 Sucsess = true,
-                Order = order
+                OrderList = (Orders)userOrders
             };
         }
 
