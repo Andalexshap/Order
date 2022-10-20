@@ -11,5 +11,6 @@ namespace Order.Interfaces
         OrderResponse GetUserOrder(string userId);
         OrderResponse UpdateStatus(string orderId, OrderStatus status);
         OrderResponse DeleteOrder(string orderId);
+        OrderResponse GetListOrders();
     }
 }

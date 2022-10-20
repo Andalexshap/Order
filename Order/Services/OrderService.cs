@@ -9,10 +9,12 @@ namespace Order.Services
     {
         private string FileName = @"orders.json";
         private readonly ICartService _cartService;
+        private readonly IProductService _productService;
 
-        public OrderService(ICartService cartService)
+        public OrderService(ICartService cartService, IProductService productService)
         {
             _cartService = cartService;
+            _productService = productService;
         }
 
         public void SetFileName(string filename)
@@ -20,7 +22,7 @@ namespace Order.Services
             FileName = filename;
         }
 
-        private Orders? GetAllOrders()
+        private Orders? GetOrders()
         {
             Orders? response;
 
@@ -38,7 +40,7 @@ namespace Order.Services
 
         public OrderResponse CreateOrder(string userId, string cartId)
         {
-            var orders = GetAllOrders();
+            var orders = GetOrders();
 
             if (orders == null)
             {
@@ -46,7 +48,7 @@ namespace Order.Services
                 orders.AllOrders = new List<Models.Order>();
             }
 
-            var response = _cartService.GetCartbyCartId(cartId);
+            var response = _cartService.RecalculateCart(cartId);
 
             if (!response.Sucsess)
             {
@@ -79,6 +81,11 @@ namespace Order.Services
 
             FileName.WriteData(orders);
 
+            foreach (Product product in response.Cart.Products)
+            {
+                _productService.UpdateProduct(product, -product.Quantity);
+            }
+
             _cartService.DeleteCart(cartId);
 
             return new OrderResponse
@@ -87,10 +94,10 @@ namespace Order.Services
                 Order = order
             };
         }
-
+       
         public OrderResponse GetOrder(string orderId)
         {
-            var orders = GetAllOrders();
+            var orders = GetOrders();
 
             if (orders == null)
             {
@@ -140,7 +147,7 @@ namespace Order.Services
 
         public OrderStatus GetOrderStatus(string orderId)
         {
-            var orders = GetAllOrders();
+            var orders = GetOrders();
             if (orders == null)
             {
                 return OrderStatus.Error;
@@ -158,7 +165,7 @@ namespace Order.Services
 
         public OrderResponse GetUserOrder(string userId)
         {
-            var orders = GetAllOrders();
+            var orders = GetOrders();
 
             if (orders == null)
             {
@@ -178,9 +185,10 @@ namespace Order.Services
                 };
             }
 
-            var order = orders.AllOrders.FirstOrDefault(x => x.UserId == userId);
+            var userOrders = new Orders();
+            userOrders.AllOrders = orders.AllOrders.Where(x => x.UserId == userId).ToList();
 
-            if (order == null)
+            if (userOrders.AllOrders == null)
             {
                 return new OrderResponse
                 {
@@ -198,16 +206,18 @@ namespace Order.Services
                 };
             }
 
+
+
             return new OrderResponse
             {
                 Sucsess = true,
-                Order = order
+                OrderList = userOrders
             };
         }
 
         public OrderResponse UpdateStatus(string orderId, OrderStatus status)
         {
-            var orders = GetAllOrders();
+            var orders = GetOrders();
 
             if (orders == null)
             {
@@ -263,7 +273,7 @@ namespace Order.Services
 
         public OrderResponse DeleteOrder(string orderId)
         {
-            var orders = GetAllOrders();
+            var orders = GetOrders();
 
             if (orders == null)
             {
@@ -311,6 +321,31 @@ namespace Order.Services
             {
                 Sucsess = true,
             };
+        }
+
+        public OrderResponse GetListOrders()
+        {
+            OrderResponse response = new OrderResponse();
+
+            var orders = GetOrders();
+
+            if (orders == null)
+            {
+                response.Sucsess = false;
+                response.Error = new List<Error>
+                {
+                    new Error
+                    {
+                        Code = "001",
+                        Message = "List carts not found",
+                        Target = nameof(GetOrders)
+                    }
+                };
+            }
+
+            response.OrderList = orders;
+
+            return response;
         }
     }
 }

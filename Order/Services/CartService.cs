@@ -1,7 +1,5 @@
-﻿using Newtonsoft.Json;
-using Order.Interfaces;
+﻿using Order.Interfaces;
 using Order.Models;
-using Order.Models.Account;
 using Order.Utils;
 
 namespace Order.Services
@@ -27,19 +25,27 @@ namespace Order.Services
             }
         }
 
-        private Carts? GetCarts()
+        public CartResponse GetListCarts()
         {
-            Carts? response;
+            CartResponse response = new CartResponse();
 
-            try
-            {
-                response = FileName.GetData<Carts>();
-            }
-            catch
-            {
-                return null;
+            var carts = GetCarts();
 
+            if (carts == null)
+            {
+                response.Sucsess = false;
+                response.Error = new List<Error>
+                {
+                    new Error
+                    {
+                        Code = "001",
+                        Message = "List carts not found",
+                        Target = nameof(GetCarts)
+                    }
+                };
             }
+
+            response.CartList = carts;
 
             return response;
         }
@@ -55,7 +61,7 @@ namespace Order.Services
             }
 
             var cart = carts.AllCarts.FirstOrDefault(x => x.UserId == userId);
-            
+
             if (cart != null)
             {
                 UpdateCart(userId, productId, quantity);
@@ -65,7 +71,11 @@ namespace Order.Services
 
             if (quantity > response.Product.Inventory)
             {
-                quantity = response.Product.Inventory;
+                response.Product.Quantity = response.Product.Inventory;
+            }
+            else
+            {
+                response.Product.Quantity = quantity;
             }
 
             cart = new Cart
@@ -73,15 +83,13 @@ namespace Order.Services
                 Id = Guid.NewGuid().ToString(),
                 UserId = userId,
                 Products = new List<Product> { response.Product },
-                Price = response.Product.Price,
-                TotalCount = quantity
+                Price = response.Product.Price * response.Product.Quantity,
+                TotalCount = response.Product.Quantity
             };
 
             carts.AllCarts.Add(cart);
 
             FileName.WriteData(carts);
-
-            _productService.UpdateProduct(response.Product, -quantity);
 
             return new CartResponse
             {
@@ -110,18 +118,20 @@ namespace Order.Services
 
             if (quantity > response.Product.Inventory)
             {
-                quantity = response.Product.Inventory;
+                response.Product.Quantity = response.Product.Inventory;
+            }
+            else
+            {
+                response.Product.Quantity = quantity;
             }
 
             cart.Products.Add(response.Product);
-            cart.Price += response.Product.Price;
-            cart.TotalCount += quantity;
+            cart.Price += response.Product.Price * response.Product.Quantity;
+            cart.TotalCount += response.Product.Quantity;
 
             carts.AllCarts.Add(cart);
 
             FileName.WriteData(carts);
-
-            _productService.UpdateProduct(response.Product, -quantity);
 
             return new CartResponse
             {
@@ -142,11 +152,11 @@ namespace Order.Services
                     Error = new List<Error>
                     {
                         new Error
-                        {
-                            Code = "001",
-                            Message = $"Cart, with CartId = {cartId}, not found",
-                            Target = nameof(DeleteCart)
-                        }
+                    {
+                        Code = "001",
+                        Message = "List carts not found",
+                        Target = nameof(GetCarts)
+                    }
                     }
                 };
             }
@@ -192,11 +202,11 @@ namespace Order.Services
                     Error = new List<Error>
                     {
                         new Error
-                        {
-                            Code = "001",
-                            Message = $"Cart, with CartId = {cartId}, not found",
-                            Target = nameof(GetCartbyCartId)
-                        }
+                    {
+                        Code = "001",
+                        Message = "List carts not found",
+                        Target = nameof(GetCarts)
+                    }
                     }
                 };
             }
@@ -227,7 +237,6 @@ namespace Order.Services
             };
         }
 
-        //TODO: Поменять ошибки при невозможности получить из файла список корзин по всем методам
         public CartResponse GetCartByUserId(string userId)
         {
             var carts = GetCarts();
@@ -241,9 +250,9 @@ namespace Order.Services
                     {
                         new Error
                         {
-                            Code = "002",
-                            Message = $"Cart, with UserId = {userId}, not found",
-                            Target = nameof(GetCartByUserId)
+                            Code = "001",
+                            Message = "List carts not found",
+                            Target = nameof(GetCarts)
                         }
                     }
                 };
@@ -275,27 +284,91 @@ namespace Order.Services
             };
         }
 
-        public CartResponse GetListCarts()
+        public CartResponse RecalculateCart(string cartId)
         {
-            CartResponse response = new CartResponse();
-
             var carts = GetCarts();
 
             if (carts == null)
             {
-                response.Sucsess = false;
-                response.Error = new List<Error>
+                return new CartResponse
                 {
-                    new Error
+                    Sucsess = false,
+                    Error = new List<Error>
+                    {
+                        new Error
                     {
                         Code = "001",
                         Message = "List carts not found",
                         Target = nameof(GetCarts)
                     }
+                    }
                 };
             }
 
-            response.CartList = carts;
+            var cart = carts.AllCarts.FirstOrDefault(x => x.Id == cartId);
+
+            if (cart == null)
+            {
+                return new CartResponse
+                {
+                    Sucsess = false,
+                    Error = new List<Error>
+                    {
+                        new Error
+                        {
+                            Code = "001",
+                            Message = $"Cart, with CartId = {cartId}, not found",
+                            Target = nameof(GetCartbyCartId)
+                        }
+                    }
+                };
+            }
+
+            cart.Price = 0;
+            cart.TotalCount = 0;
+
+            foreach (Product product in cart.Products)
+            {
+                var result = _productService.GetProductById(product.Id);
+
+                if (result == null) cart.Products.Remove(product);
+
+                if (result!.Product.Price != product.Price)
+                {
+                    product.Price = result.Product.Price;
+                }
+
+                if (result.Product.Inventory < product.Quantity)
+                {
+                    product.Quantity = result.Product.Inventory;
+                }
+
+                cart.Price += product.Price * product.Quantity;
+                cart.TotalCount += product.Quantity;
+            }
+
+            FileName.WriteData(carts);
+
+            return new CartResponse
+            {
+                Sucsess = true,
+                Cart = cart
+            };
+        }
+
+        private Carts? GetCarts()
+        {
+            Carts? response;
+
+            try
+            {
+                response = FileName.GetData<Carts>();
+            }
+            catch
+            {
+                return null;
+
+            }
 
             return response;
         }

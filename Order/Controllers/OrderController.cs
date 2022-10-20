@@ -56,7 +56,7 @@ namespace Order.Controllers
                 return View("Access denied!");
             }
 
-            var response = _orderService.GetAllOrders();
+            var response = _orderService.GetListOrders();
 
             return View(response);
         }

@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using Order.Interfaces;
+﻿using Order.Interfaces;
 using Order.Models;
 using Order.Models.Account;
 using Order.Utils;
@@ -130,6 +129,7 @@ namespace Order.Services
                 accounts.Users = new List<User>();
 
                 var administrator = request;
+                administrator.Id = Guid.NewGuid().ToString();
                 administrator.Key = Guid.NewGuid().ToString();
                 administrator.MemberType = MemberType.Administrator;
 
@@ -145,6 +145,7 @@ namespace Order.Services
             }
 
             var user = request;
+            user.Id = Guid.NewGuid().ToString();
             user.Key = Guid.NewGuid().ToString();
             user.MemberType = MemberType.User;
 
@@ -266,7 +267,6 @@ namespace Order.Services
         }
 
 
-        ///TODO: Change to ID, not KEY
         public AuthorizationResponse DeleteUserbyId(string userId)
         {
             var accounts = GetAccounts();
@@ -288,7 +288,7 @@ namespace Order.Services
                 };
             }
 
-            var found = accounts.Users.FirstOrDefault(x => x.Key == userId);
+            var found = accounts.Users.FirstOrDefault(x => x.Id == userId);
 
             if (found == null)
             {
