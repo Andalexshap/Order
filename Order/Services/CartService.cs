@@ -119,7 +119,7 @@ namespace Order.Services
             var response = _productService.GetProductById(productId);
             var cartProduct = cart.Products.FirstOrDefault(x => x.Id == response.Product.Id);
 
-            if (response.Product.Id == cartProduct?.Id)
+            if (response?.Product?.Id == cartProduct?.Id)
             {
                 if (quantity + cartProduct.Quantity > response.Product.Inventory)
                 {
