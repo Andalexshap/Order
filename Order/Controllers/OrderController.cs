@@ -27,7 +27,7 @@ namespace Order.Controllers
                 return Redirect("~/account/login");
             }
 
-            var response = _orderService.CreateOrder(_user.Key, cartId);
+            var response = _orderService.CreateOrder(_user.Id, cartId);
 
             return View(response);
 

@@ -64,7 +64,7 @@ namespace Order.Services
 
             if (cart != null)
             {
-                UpdateCart(userId, productId, quantity);
+                return UpdateCart(userId, productId, quantity);
             }
 
             var response = _productService.GetProductById(productId);
@@ -104,7 +104,7 @@ namespace Order.Services
 
             if (carts == null)
             {
-                CreateCart(userId, productId, quantity);
+                return CreateCart(userId, productId, quantity);
             }
 
             var cart = carts.AllCarts.FirstOrDefault(x => x.UserId == userId);
@@ -114,22 +114,37 @@ namespace Order.Services
                 CreateCart(userId, productId, quantity);
             }
 
-            var response = _productService.GetProductById(productId);
+            RecalculateCart(cart!.Id);
 
-            if (quantity > response.Product.Inventory)
+            var response = _productService.GetProductById(productId);
+            var cartProduct = cart.Products.FirstOrDefault(x => x.Id == response.Product.Id);
+
+            if (response?.Product?.Id == cartProduct?.Id)
             {
-                response.Product.Quantity = response.Product.Inventory;
+                if (quantity + cartProduct.Quantity > response.Product.Inventory)
+                {
+                    cartProduct.Quantity = response.Product.Inventory;
+                }
+                else
+                {
+                    cartProduct.Quantity += quantity;
+                }
             }
             else
             {
-                response.Product.Quantity = quantity;
+                if (quantity > response.Product.Inventory)
+                {
+                    response.Product.Quantity = response.Product.Inventory;
+                }
+                else
+                {
+                    response.Product.Quantity = quantity;
+                }
+
+                cart.Products.Add(response.Product);
+                cart.Price += response.Product.Price * response.Product.Quantity;
+                cart.TotalCount += response.Product.Quantity;
             }
-
-            cart.Products.Add(response.Product);
-            cart.Price += response.Product.Price * response.Product.Quantity;
-            cart.TotalCount += response.Product.Quantity;
-
-            carts.AllCarts.Add(cart);
 
             FileName.WriteData(carts);
 
