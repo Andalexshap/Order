@@ -5,7 +5,7 @@ namespace Order.Interfaces
     public interface IProductService
     {
         void SetFileName(string filename);
-        Products GetAllProducts();
+        ProductResponse GetAllProducts();
         ProductResponse AddNewProduct(Product product);
         ProductResponse UpdateProduct(Product product, int? quqntity);
         ProductResponse DeleteProduct(string id);

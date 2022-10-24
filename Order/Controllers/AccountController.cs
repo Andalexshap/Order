@@ -33,7 +33,7 @@ namespace Order.Controllers
 
             var response = _accountService.LoginUser(user);
 
-            if (response.Sucsess)
+            if (response.Success)
             {
                 _user.SetUser(response.User);
             }

@@ -2,7 +2,7 @@
 {
     public class Response
     {
-        public bool Sucsess { get; set; }
-        public List<Error> Error { get; set; }
+        public bool Success { get; set; }
+        public List<Error> Errors { get; set; }
     }
 }

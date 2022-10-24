@@ -39,64 +39,39 @@ namespace Order.Services
 
             if (accounts == null)
             {
-                return new AuthorizationResponse
+                return new AuthorizationResponse(new Error
                 {
-                    Sucsess = false,
-                    Error = new List<Error>
-                    {
-                        new Error
-                        {
-                            Code = "001",
-                            Message = "Accounts is not Found!",
-                            Target = nameof(LoginUser)
-                        }
-                    }
-                };
+                    Code = "001",
+                    Message = "Accounts is not Found!",
+                    Target = nameof(LoginUser)
+                });
             }
 
             var found = accounts.Users.FirstOrDefault(x => x.Login == request.Login);
 
             if (found == null)
             {
-                return new AuthorizationResponse
+                return new AuthorizationResponse(new Error
                 {
-                    Sucsess = false,
-                    Error = new List<Error>
-                    {
-                        new Error
-                        {
-                            Code = "002",
-                            Message = "User is not Found!",
-                            Target = nameof(LoginUser)
-                        }
-                    }
-                };
+                    Code = "002",
+                    Message = "User is not Found!",
+                    Target = nameof(LoginUser)
+                });
             }
 
             if (found.Password == request.Password)
             {
                 found.Password = string.Empty;
 
-                return new AuthorizationResponse
-                {
-                    Sucsess = true,
-                    User = found
-                };
+                return new AuthorizationResponse(found);
             }
 
-            return new AuthorizationResponse
+            return new AuthorizationResponse(new Error
             {
-                Sucsess = false,
-                Error = new List<Error>
-                    {
-                        new Error
-                        {
-                            Code = "003",
-                            Message = "Password is not correct!",
-                            Target = nameof(LoginUser)
-                        }
-                    }
-            };
+                Code = "003",
+                Message = "Password is not correct!",
+                Target = nameof(LoginUser)
+            });
         }
         public AuthorizationResponse RegisterUser(User request)
         {
@@ -107,19 +82,12 @@ namespace Order.Services
                 var found = accounts.Users.FirstOrDefault(x => x.Login == request.Login);
                 if (found != null)
                 {
-                    return new AuthorizationResponse
+                    return new AuthorizationResponse(new Error
                     {
-                        Sucsess = false,
-                        Error = new List<Error>
-                        {
-                            new Error
-                            {
-                                Code = "004",
-                                Message = "User exist!",
-                                Target= nameof(RegisterUser)
-                            }
-                        }
-                    };
+                        Code = "004",
+                        Message = "User exist!",
+                        Target = nameof(RegisterUser)
+                    });
                 }
 
             }
@@ -137,11 +105,7 @@ namespace Order.Services
 
                 FileName.WriteData(accounts);
 
-                return new AuthorizationResponse
-                {
-                    Sucsess = true,
-                    User = administrator
-                };
+                return new AuthorizationResponse(true);
             }
 
             var user = request;
@@ -153,12 +117,7 @@ namespace Order.Services
 
             FileName.WriteData(accounts);
 
-            return new AuthorizationResponse
-            {
-                Sucsess = true,
-                User = user
-            };
-
+            return new AuthorizationResponse(user);
         }
 
         public AuthorizationResponse UpdateUser(User request)
@@ -167,38 +126,24 @@ namespace Order.Services
 
             if (accounts == null)
             {
-                return new AuthorizationResponse
+                return new AuthorizationResponse(new Error
                 {
-                    Sucsess = false,
-                    Error = new List<Error>
-                    {
-                        new Error
-                        {
-                            Code = "001",
-                            Message = "Accounts is not Found!",
-                            Target = nameof(LoginUser)
-                        }
-                    }
-                };
+                    Code = "001",
+                    Message = "Accounts is not Found!",
+                    Target = nameof(LoginUser)
+                });
             }
 
             var found = accounts.Users.FirstOrDefault(x => x.Login == request.Login);
 
             if (found == null)
             {
-                return new AuthorizationResponse
+                return new AuthorizationResponse(new Error
                 {
-                    Sucsess = false,
-                    Error = new List<Error>
-                    {
-                        new Error
-                        {
-                            Code = "002",
-                            Message = "User is not Found!",
-                            Target = nameof(LoginUser)
-                        }
-                    }
-                };
+                    Code = "002",
+                    Message = "User is not Found!",
+                    Target = nameof(LoginUser)
+                });
             }
 
             request.Key = found.Key;
@@ -210,10 +155,7 @@ namespace Order.Services
 
             FileName.WriteData(accounts);
 
-            return new AuthorizationResponse
-            {
-                Sucsess = true
-            };
+            return new AuthorizationResponse(true);
         }
 
         public AuthorizationResponse DeleteUserbyLogin(string login)
@@ -222,48 +164,31 @@ namespace Order.Services
 
             if (accounts == null)
             {
-                return new AuthorizationResponse
+                return new AuthorizationResponse(new Error
                 {
-                    Sucsess = false,
-                    Error = new List<Error>
-                    {
-                        new Error
-                        {
-                            Code = "001",
-                            Message = "Accounts is not Found!",
-                            Target = nameof(LoginUser)
-                        }
-                    }
-                };
+                    Code = "001",
+                    Message = "Accounts is not Found!",
+                    Target = nameof(LoginUser)
+                });
             }
 
             var found = accounts.Users.FirstOrDefault(x => x.Login == login);
 
             if (found == null)
             {
-                return new AuthorizationResponse
+                return new AuthorizationResponse(new Error
                 {
-                    Sucsess = false,
-                    Error = new List<Error>
-                    {
-                        new Error
-                        {
-                            Code = "002",
-                            Message = "User is not Found!",
-                            Target = nameof(LoginUser)
-                        }
-                    }
-                };
+                    Code = "002",
+                    Message = "User is not Found!",
+                    Target = nameof(LoginUser)
+                });
             }
 
             accounts.Users.Remove(found);
 
             FileName.WriteData(accounts);
 
-            return new AuthorizationResponse
-            {
-                Sucsess = true
-            };
+            return new AuthorizationResponse(true);
         }
 
 
@@ -273,48 +198,31 @@ namespace Order.Services
 
             if (accounts == null)
             {
-                return new AuthorizationResponse
+                return new AuthorizationResponse(new Error
                 {
-                    Sucsess = false,
-                    Error = new List<Error>
-                    {
-                        new Error
-                        {
-                            Code = "001",
-                            Message = "Accounts is not Found!",
-                            Target = nameof(LoginUser)
-                        }
-                    }
-                };
+                    Code = "001",
+                    Message = "Accounts is not Found!",
+                    Target = nameof(LoginUser)
+                });
             }
 
             var found = accounts.Users.FirstOrDefault(x => x.Id == userId);
 
             if (found == null)
             {
-                return new AuthorizationResponse
+                return new AuthorizationResponse(new Error
                 {
-                    Sucsess = false,
-                    Error = new List<Error>
-                    {
-                        new Error
-                        {
-                            Code = "002",
-                            Message = "User is not Found!",
-                            Target = nameof(LoginUser)
-                        }
-                    }
-                };
+                    Code = "002",
+                    Message = "User is not Found!",
+                    Target = nameof(LoginUser)
+                });
             }
 
             accounts.Users.Remove(found);
 
             FileName.WriteData(accounts);
 
-            return new AuthorizationResponse
-            {
-                Sucsess = true
-            };
+            return new AuthorizationResponse(true);
         }
     }
 }
