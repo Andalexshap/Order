@@ -146,6 +146,7 @@ namespace Order.Services
                 });
             }
 
+            request.Id = found.Id;
             request.Key = found.Key;
             request.Password = found.Password;
             request.MemberType = found.MemberType;
