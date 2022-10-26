@@ -50,22 +50,14 @@ namespace Order.Services
 
             var response = _cartService.RecalculateCart(cartId);
 
-            if (!response.Sucsess)
+            if (!response.Success)
             {
-                return new OrderResponse
+                return new OrderResponse(new Error
                 {
-                    Sucsess = false,
-                    Error = new List<Error>
-                    {
-                        new Error
-                        {
-                            Code = "001",
-                            Message = "Cart not found!",
-                            Target = nameof(CreateOrder)
-                        }
-                    }
-
-                };
+                    Code = "002",
+                    Message = "Cart not found!",
+                    Target = nameof(CreateOrder)
+                });
             }
 
             var order = new Models.Order();
@@ -88,60 +80,36 @@ namespace Order.Services
 
             _cartService.DeleteCart(cartId);
 
-            return new OrderResponse
-            {
-                Sucsess = true,
-                Order = order
-            };
+            return new OrderResponse(order);
         }
-       
+
         public OrderResponse GetOrder(string orderId)
         {
             var orders = GetOrders();
 
             if (orders == null)
             {
-                return new OrderResponse
+                return new OrderResponse(new Error
                 {
-                    Sucsess = false,
-                    Error = new List<Error>
-                    {
-                        new Error
-                        {
-                            Code = "002",
-                            Message = $"Order, with ID = {orderId}, not found!",
-                            Target = nameof(GetOrder)
-                        }
-                    }
-
-                };
+                    Code = "001",
+                    Message = $"Orders not found!",
+                    Target = nameof(GetOrder)
+                });
             }
 
             var order = orders.AllOrders.FirstOrDefault(x => x.Id == orderId);
 
             if (order == null)
             {
-                return new OrderResponse
+                return new OrderResponse(new Error
                 {
-                    Sucsess = false,
-                    Error = new List<Error>
-                    {
-                        new Error
-                        {
-                            Code = "002",
-                            Message = $"Order, with ID = {orderId}, not found!",
-                            Target = nameof(GetOrder)
-                        }
-                    }
-
-                };
+                    Code = "001",
+                    Message = $"Orders not found!",
+                    Target = nameof(GetOrder)
+                });
             }
 
-            return new OrderResponse
-            {
-                Sucsess = true,
-                Order = order
-            };
+            return new OrderResponse(order);
         }
 
 
@@ -169,20 +137,12 @@ namespace Order.Services
 
             if (orders == null)
             {
-                return new OrderResponse
+                return new OrderResponse(new Error
                 {
-                    Sucsess = false,
-                    Error = new List<Error>
-                    {
-                        new Error
-                        {
-                            Code = "003",
-                            Message = $"Order, with UserID = {userId}, not found!",
-                            Target = nameof(GetUserOrder)
-                        }
-                    }
-
-                };
+                    Code = "001",
+                    Message = $"Orders not found!",
+                    Target = nameof(GetOrder)
+                });
             }
 
             var userOrders = new Orders();
@@ -190,29 +150,15 @@ namespace Order.Services
 
             if (userOrders.AllOrders == null)
             {
-                return new OrderResponse
+                return new OrderResponse(new Error
                 {
-                    Sucsess = false,
-                    Error = new List<Error>
-                    {
-                        new Error
-                        {
-                            Code = "003",
-                            Message = $"Order, with UserID = {userId}, not found!",
-                            Target = nameof(GetUserOrder)
-                        }
-                    }
-
-                };
+                    Code = "003",
+                    Message = $"Order, with UserID = {userId}, not found!",
+                    Target = nameof(GetUserOrder)
+                });
             }
 
-
-
-            return new OrderResponse
-            {
-                Sucsess = true,
-                OrderList = userOrders
-            };
+            return new OrderResponse(userOrders);
         }
 
         public OrderResponse UpdateStatus(string orderId, OrderStatus status)
@@ -221,39 +167,24 @@ namespace Order.Services
 
             if (orders == null)
             {
-                return new OrderResponse
+                return new OrderResponse(new Error
                 {
-                    Sucsess = false,
-                    Error = new List<Error>
-                    {
-                        new Error
-                        {
-                            Code = "002",
-                            Message = $"Order, with ID = {orderId}, not found!",
-                            Target = nameof(UpdateStatus)
-                        }
-                    }
-
-                };
+                    Code = "001",
+                    Message = $"Orders not found!",
+                    Target = nameof(GetOrder)
+                });
             }
 
             var order = orders.AllOrders.FirstOrDefault(x => x.Id == orderId);
 
             if (order == null)
             {
-                return new OrderResponse
+                return new OrderResponse(new Error
                 {
-                    Sucsess = false,
-                    Error = new List<Error>
-                    {
-                        new Error
-                        {
-                            Code = "002",
-                            Message = $"Order, with ID = {orderId}, not found!",
-                            Target = nameof(UpdateStatus)
-                        }
-                    }
-                };
+                    Code = "002",
+                    Message = $"Order, with ID = {orderId}, not found!",
+                    Target = nameof(DeleteOrder)
+                });
             }
 
             order.Status = status;
@@ -264,11 +195,7 @@ namespace Order.Services
                 writer.Write(output);
             }
 
-            return new OrderResponse
-            {
-                Sucsess = true,
-                Order = order
-            };
+            return new OrderResponse(order);
         }
 
         public OrderResponse DeleteOrder(string orderId)
@@ -277,75 +204,48 @@ namespace Order.Services
 
             if (orders == null)
             {
-                return new OrderResponse
+                return new OrderResponse(new Error
                 {
-                    Sucsess = false,
-                    Error = new List<Error>
-                    {
-                        new Error
-                        {
-                            Code = "002",
-                            Message = $"Order, with ID = {orderId}, not found!",
-                            Target = nameof(DeleteOrder)
-                        }
-                    }
-
-                };
+                    Code = "001",
+                    Message = $"Orders not found!",
+                    Target = nameof(GetOrder)
+                });
             }
 
             var order = orders.AllOrders.FirstOrDefault(x => x.Id == orderId);
 
             if (order == null)
             {
-                return new OrderResponse
+                return new OrderResponse(new Error
                 {
-                    Sucsess = false,
-                    Error = new List<Error>
-                    {
-                        new Error
-                        {
-                            Code = "002",
-                            Message = $"Order, with ID = {orderId}, not found!",
-                            Target = nameof(DeleteOrder)
-                        }
-                    }
-
-                };
+                    Code = "002",
+                    Message = $"Order, with ID = {orderId}, not found!",
+                    Target = nameof(DeleteOrder)
+                });
             }
 
             orders.AllOrders.Remove(order);
 
             FileName.WriteData(orders);
 
-            return new OrderResponse
-            {
-                Sucsess = true,
-            };
+            return new OrderResponse(true);
         }
 
         public OrderResponse GetListOrders()
         {
-            OrderResponse response = new OrderResponse();
-
             var orders = GetOrders();
 
             if (orders == null)
             {
-                response.Sucsess = false;
-                response.Error = new List<Error>
+                return new OrderResponse(new Error
                 {
-                    new Error
-                    {
-                        Code = "001",
-                        Message = "List carts not found",
-                        Target = nameof(GetOrders)
-                    }
-                };
+                    Code = "001",
+                    Message = $"Orders not found!",
+                    Target = nameof(GetOrder)
+                });
             }
 
-            response.OrderList = orders;
-
-            return response;
+            return new OrderResponse(orders);
         }
     }
 }

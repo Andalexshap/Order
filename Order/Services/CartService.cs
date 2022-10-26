@@ -1,5 +1,6 @@
 ﻿using Order.Interfaces;
 using Order.Models;
+using Order.Models.Account;
 using Order.Utils;
 
 namespace Order.Services
@@ -27,27 +28,19 @@ namespace Order.Services
 
         public CartResponse GetListCarts()
         {
-            CartResponse response = new CartResponse();
-
             var carts = GetCarts();
 
             if (carts == null)
             {
-                response.Sucsess = false;
-                response.Error = new List<Error>
+                return new CartResponse(new Error
                 {
-                    new Error
-                    {
-                        Code = "001",
-                        Message = "List carts not found",
-                        Target = nameof(GetCarts)
-                    }
-                };
+                    Code = "001",
+                    Message = "List carts not found",
+                    Target = nameof(GetCarts)
+                });
             }
 
-            response.CartList = carts;
-
-            return response;
+            return new CartResponse(carts);
         }
 
         public CartResponse CreateCart(string userId, string productId, int? quantity)
@@ -87,15 +80,11 @@ namespace Order.Services
                 TotalCount = response.Product.Quantity
             };
 
-            carts.AllCarts.Add(cart);
+            carts.AddCart(cart);
 
             FileName.WriteData(carts);
 
-            return new CartResponse
-            {
-                Sucsess = true,
-                Cart = cart
-            };
+            return new CartResponse(cart);
         }
 
         public CartResponse UpdateCart(string userId, string productId, int? quantity)
@@ -148,11 +137,7 @@ namespace Order.Services
 
             FileName.WriteData(carts);
 
-            return new CartResponse
-            {
-                Sucsess = true,
-                Cart = cart
-            };
+            return new CartResponse(cart);
         }
 
         public CartResponse DeleteCart(string cartId)
@@ -161,48 +146,31 @@ namespace Order.Services
 
             if (carts == null)
             {
-                return new CartResponse
+                return new CartResponse(new Error
                 {
-                    Sucsess = false,
-                    Error = new List<Error>
-                    {
-                        new Error
-                    {
-                        Code = "001",
-                        Message = "List carts not found",
-                        Target = nameof(GetCarts)
-                    }
-                    }
-                };
+                    Code = "001",
+                    Message = "List carts not found",
+                    Target = nameof(GetCarts)
+                });
             }
 
             var cart = carts.AllCarts.FirstOrDefault(x => x.Id == cartId);
 
             if (cart == null)
             {
-                return new CartResponse
+                return new CartResponse(new Error
                 {
-                    Sucsess = false,
-                    Error = new List<Error>
-                    {
-                        new Error
-                        {
-                            Code = "001",
-                            Message = $"Cart, with CartId = {cartId}, not found",
-                            Target = nameof(DeleteCart)
-                        }
-                    }
-                };
+                    Code = "001",
+                    Message = $"Cart, with CartId = {cartId}, not found",
+                    Target = nameof(DeleteCart)
+                });
             }
 
-            carts.AllCarts.Remove(cart);
+            carts.RemoveCart(cart);
 
             FileName.WriteData(carts);
 
-            return new CartResponse
-            {
-                Sucsess = true
-            };
+            return new CartResponse(true);
         }
 
         public CartResponse GetCartbyCartId(string cartId)
@@ -211,45 +179,27 @@ namespace Order.Services
 
             if (carts == null)
             {
-                return new CartResponse
+                return new CartResponse(new Error
                 {
-                    Sucsess = false,
-                    Error = new List<Error>
-                    {
-                        new Error
-                    {
-                        Code = "001",
-                        Message = "List carts not found",
-                        Target = nameof(GetCarts)
-                    }
-                    }
-                };
+                    Code = "001",
+                    Message = "List carts not found",
+                    Target = nameof(GetCarts)
+                });
             }
 
             var cart = carts.AllCarts.FirstOrDefault(x => x.Id == cartId);
 
             if (cart == null)
             {
-                return new CartResponse
+                return new CartResponse(new Error
                 {
-                    Sucsess = false,
-                    Error = new List<Error>
-                    {
-                        new Error
-                        {
-                            Code = "001",
-                            Message = $"Cart, with CartId = {cartId}, not found",
-                            Target = nameof(GetCartbyCartId)
-                        }
-                    }
-                };
+                    Code = "001",
+                    Message = $"Cart, with CartId = {cartId}, not found",
+                    Target = nameof(GetCartbyCartId)
+                });
             }
 
-            return new CartResponse
-            {
-                Sucsess = true,
-                Cart = cart
-            };
+            return new CartResponse(cart);
         }
 
         public CartResponse GetCartByUserId(string userId)
@@ -258,45 +208,27 @@ namespace Order.Services
 
             if (carts == null)
             {
-                return new CartResponse
+                return new CartResponse(new Error
                 {
-                    Sucsess = false,
-                    Error = new List<Error>
-                    {
-                        new Error
-                        {
-                            Code = "001",
-                            Message = "List carts not found",
-                            Target = nameof(GetCarts)
-                        }
-                    }
-                };
+                    Code = "001",
+                    Message = "List carts not found",
+                    Target = nameof(GetCarts)
+                });
             }
 
             var cart = carts.AllCarts.FirstOrDefault(x => x.UserId == userId);
 
             if (cart == null)
             {
-                return new CartResponse
+                return new CartResponse(new Error
                 {
-                    Sucsess = false,
-                    Error = new List<Error>
-                    {
-                        new Error
-                        {
-                            Code = "002",
-                            Message = $"Cart, with UserId = {userId}, not found",
-                            Target = nameof(GetCartByUserId)
-                        }
-                    }
-                };
+                    Code = "002",
+                    Message = $"Cart, with UserId = {userId}, not found",
+                    Target = nameof(GetCartByUserId)
+                });
             }
 
-            return new CartResponse
-            {
-                Sucsess = true,
-                Cart = cart
-            };
+            return new CartResponse(cart);
         }
 
         public CartResponse RecalculateCart(string cartId)
@@ -305,38 +237,24 @@ namespace Order.Services
 
             if (carts == null)
             {
-                return new CartResponse
+                return new CartResponse(new Error
                 {
-                    Sucsess = false,
-                    Error = new List<Error>
-                    {
-                        new Error
-                    {
-                        Code = "001",
-                        Message = "List carts not found",
-                        Target = nameof(GetCarts)
-                    }
-                    }
-                };
+                    Code = "001",
+                    Message = "List carts not found",
+                    Target = nameof(GetCarts)
+                });
             }
 
             var cart = carts.AllCarts.FirstOrDefault(x => x.Id == cartId);
 
             if (cart == null)
             {
-                return new CartResponse
+                return new CartResponse(new Error
                 {
-                    Sucsess = false,
-                    Error = new List<Error>
-                    {
-                        new Error
-                        {
-                            Code = "001",
-                            Message = $"Cart, with CartId = {cartId}, not found",
-                            Target = nameof(GetCartbyCartId)
-                        }
-                    }
-                };
+                    Code = "001",
+                    Message = $"Cart, with CartId = {cartId}, not found",
+                    Target = nameof(GetCartbyCartId)
+                });
             }
 
             cart.Price = 0;
@@ -364,11 +282,7 @@ namespace Order.Services
 
             FileName.WriteData(carts);
 
-            return new CartResponse
-            {
-                Sucsess = true,
-                Cart = cart
-            };
+            return new CartResponse(cart);
         }
 
         private Carts? GetCarts()
